@@ -82,9 +82,9 @@ class GeneratorModel(tf.keras.Model):
     def train_step(self, data):
         # Unpack the data. Its structure depends on your model and
         # on what you pass to `fit()`.
-        print(data)
-        x, y = data
 
+        x, y = data
+        print(x.shape)
 
         with tf.GradientTape() as tape:
             y_pred = self(x, training=True)  # Forward pass
