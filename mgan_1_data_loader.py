@@ -9,7 +9,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow.keras.utils as ku
 from sklearn.model_selection import train_test_split
 import pandas as pd 
-
+import random
 
 class DataLoader(object):
     def __init__(self):
@@ -67,8 +67,11 @@ class DataLoader(object):
         input_sequences = []
 
         train_sequences = self.tokenizer.texts_to_sequences(self.sentences)
+        #print("train_sequences")
+        #print(train_sequences)
         self.max_sequence_length = max([len(x) for x in train_sequences])
         input_sequences = np.array(pad_sequences(train_sequences, maxlen=self.max_sequence_length, padding='pre'))
+        
         return input_sequences
 
 
@@ -79,14 +82,65 @@ class DataLoader(object):
         
         return xs, ys
 
-    def word_from_index(self,w_index):
-        predicted = np.argmax(ys[w_index])
-        print(predicted)
+    def word_from_index(self,predicted_index):
+        #predicted = np.argmax(ys[w_index])
+        #print(predicted)
         for word, index in self.tokenizer.word_index.items():
-                if index == predicted:
+                if index == predicted_index:
                     output_word = word
                     break
         print(output_word)
+
+    def sentences_from_words():
+        print()
+
+    def generate_fake_text(self):
+        xs = self.tokenization
+        #ys = tf.ones(shape=(xs.shape[0],), dtype=tf.dtypes.int32)
+        '''
+        After analysis of real sentences tokens were made conclusion to mimic real sentences more accurate way
+        1. Generate Random number of words in sentences
+        2. Mimic structure and specific words in the beginning and end of text
+        '''
+
+        sentences_array=[]
+        for i in range(len(self.sentences)):
+
+        # loop start in range(#total_samples):
+        #1. word number: take random number of words in range 30 > x > 300
+        #2. we do randomization in custom way to mimic real sentences structure
+            rand_wn = random.randint(30, 300)
+            sentence_gen = []
+            rand_wn60 = round(rand_wn*0.6)
+            index1 = rand_wn60
+            rand_wn30 = round(rand_wn*0.3)
+            index2 = rand_wn60+rand_wn30
+            #rand_wn10 = rand_wn-(rand_wn60+rand_wn30)
+            #index3 = rand_wn-1
+
+            for word_n in range(rand_wn):
+                #60% words below 500 index
+                if(word_n < index1):
+                    rand_word_index_1 = random.randrange(0,500)
+                    sentence_gen.append(rand_word_index_1)
+                    
+                #30% 0-12000
+                if(word_n >= index1 and word_n < index2):
+                    rand_word_index_2 = random.randrange(0,12000)
+                    sentence_gen.append(rand_word_index_2)
+                    
+                #10% 0-63300
+                if(word_n >= index2):
+                    rand_word_index_3 = random.randint(0, self.total_words-1)
+                    sentence_gen.append(rand_word_index_3)
+                    
+            sentences_array.append(sentence_gen)
+
+        fake_sequences = np.array(pad_sequences(sentences_array, maxlen=self.max_sequence_length, padding='pre'))
+        return fake_sequences
+
+
+
 
         
 #example usage dataloader class

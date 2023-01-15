@@ -34,6 +34,7 @@ learning_rate=0.01
 #DATA FOR DISCRIMINATOR
 data_loader = DataLoader()
 input_sequences = data_loader.tokenization()
+fake_sequences = data_loader.generate_fake_text()
 #xs,ys = data_loader.data_prepare(input_sequences)
 total_words = data_loader.total_words #63,303
 max_sequence_length = data_loader.max_sequence_length #568
@@ -50,7 +51,7 @@ ys = tf.ones(shape=(input_sequences.shape[0],), dtype=tf.dtypes.int32)
 #5. return sequences
 # loop end
 
-fake_x = tf.random.uniform(shape=xs.shape, minval=0, maxval=total_words, dtype=tf.dtypes.int32)
+fake_x = fake_sequences  #tf.random.uniform(shape=xs.shape, minval=0, maxval=total_words, dtype=tf.dtypes.int32)
 fake_y = tf.zeros(shape=(input_sequences.shape[0],), dtype=tf.dtypes.int32)
 
 
@@ -112,9 +113,6 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
 loss_fn = tf.keras.losses.BinaryCrossentropy()
 
 def train_discriminator(modelD):
-
-    
-
 
     epochs = 5
     for epoch in range(epochs):
@@ -195,38 +193,42 @@ def train_discriminator(modelD):
 
 #train_discriminator(modelD)
 
+def predict_disc():
 
-
-modelD.load_weights('2dk-discriminator-epoch-2')
-modelD.compile(loss=loss_fn, 
-              optimizer=optimizer, 
-              metrics=['accuracy'])
-# Check its architecture
-#modelD.summary()
-batch_x, batch_y = next(iter(val_dataset))
-loss, acc = modelD.evaluate(batch_x, batch_y, verbose=2)
-print('Restored model, accuracy: {:5.2f}%'.format(100 * acc))
-
-
-
-seed_text = "kids drink to we or not how wife impossible burn error beach honestly long wood burn go run instrument does good not"
-#next_words = []
-token_list = data_loader.tokenizer.texts_to_sequences([seed_text])[0]
-token_list = pad_sequences([token_list], maxlen=max_sequence_length, padding='pre')
-x_test = tf.random.uniform(shape=token_list.shape, minval=0, maxval=total_words, dtype=tf.dtypes.int32)
-print("token_list")
-print(token_list.shape)
-print("fake")
-print(x_test)
-
-
-res = modelD.predict(x_test)
-res2 = modelD.predict(token_list)
-print(res)
-print(res2)
+    modelD.load_weights('2dk-discriminator-epoch-2')
+    modelD.compile(loss=loss_fn, 
+                optimizer=optimizer, 
+                metrics=['accuracy'])
+    # Check its architecture
+    #modelD.summary()
+    batch_x, batch_y = next(iter(val_dataset))
+    loss, acc = modelD.evaluate(batch_x, batch_y, verbose=2)
+    print('Restored model, accuracy: {:5.2f}%'.format(100 * acc))
 
 
 
+    #seed_text = "kids drink to we or not how wife impossible burn error beach honestly long wood burn go run instrument does good not"
+    #seed_text = "kids drink to we or not how wife impossible burn error beach honestly long wood burn go run instrument does good not"
+    #seed_text = "do you think it is a miracle"
+    seed_text = "test wife instrument road study if run black"
+    
+    #next_words = []
+    token_list = data_loader.tokenizer.texts_to_sequences([seed_text])[0]
+    token_list = pad_sequences([token_list], maxlen=max_sequence_length, padding='pre')
+    #x_test = tf.random.uniform(shape=token_list.shape, minval=0, maxval=total_words, dtype=tf.dtypes.int32)
+    print("token_list")
+    print(token_list.shape)
+    #print("fake")
+    #print(x_test)
+
+
+    #res = modelD.predict(x_test)
+    res2 = modelD.predict(token_list)
+    #print(res)
+    print(res2)
+
+
+predict_disc()
 
 #task 1 - with custom loop controll loss value. Later we use it to apply feedback score+++
 #pre train generator to generate some samples. 
